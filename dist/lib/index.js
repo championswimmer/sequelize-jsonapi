@@ -9,14 +9,14 @@ class SJ {
         this.models = {};
         opt.dbOpts = Object.assign({}, opt.dbOpts);
         opt.dbOpts.logging = opt.dbOpts.logging || debug_1.default('sj:sequelize');
-        this.db = store_1.default(opt.dbUrl, opt.dbOpts);
+        this.db = store_1.default.getDB(opt.dbUrl, opt.dbOpts);
         this.define = (modelName, attributes, options) => {
             this.models[modelName] = (this.db.define(modelName, attributes, options));
             return this.models[modelName];
         };
         this.sync = (options) => {
             this.restAPI = index_1.createAPIRoute(this.models);
-            return this.db.sync(options);
+            store_1.default.prepareDB(options, this.samples);
         };
     }
 }

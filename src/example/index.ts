@@ -16,11 +16,21 @@ const Article = server.define('articles', {
   title: Types.STRING,
   body: Types.TEXT
 })
+Article.belongsTo(User, {as: 'author'})
 
-Article.belongsTo(User)
+server.samples = {
+  users: [
+    {age: 12, name: 'Harry'},
+    {age: 13, name: 'Ron'}
+  ],
+  articles: [
+    {title: 'Awesome Article', body: 'Some Stuff', authorId: 1},
+    {title: 'Another Piece', body: 'With some shoddy journalism', authorId: 2}
+  ]
+}
+
 
 server.sync({force: true})
-  .then(() => log('DB Synced'))
 
 const app = express()
 app.use('/api', server.restAPI)

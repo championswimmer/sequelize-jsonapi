@@ -15,9 +15,18 @@ const Article = server.define('articles', {
     title: lib_1.Types.STRING,
     body: lib_1.Types.TEXT
 });
-Article.belongsTo(User);
-server.sync({ force: true })
-    .then(() => log('DB Synced'));
+Article.belongsTo(User, { as: 'author' });
+server.samples = {
+    users: [
+        { age: 12, name: 'Harry' },
+        { age: 13, name: 'Ron' }
+    ],
+    articles: [
+        { title: 'Awesome Article', body: 'Some Stuff', authorId: 1 },
+        { title: 'Another Piece', body: 'With some shoddy journalism', authorId: 2 }
+    ]
+};
+server.sync({ force: true });
 const app = express();
 app.use('/api', server.restAPI);
 app.listen(2222, () => log('server started'));

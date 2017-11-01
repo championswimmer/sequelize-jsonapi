@@ -1,7 +1,7 @@
 import * as Bluebird from 'bluebird'
 import debug from 'debug'
 import Sequelize = require('sequelize')
-import getDB from './store'
+import store from './store'
 import {createAPIRoute} from './api/index'
 import {Router} from 'express'
 
@@ -14,14 +14,15 @@ export class SJ {
     modelName: string,
     attributes: Sequelize.DefineAttributes,
     options?: Sequelize.DefineOptions<any>) => Sequelize.Model<any, any>
-  public sync: (options?: Sequelize.SyncOptions) => Bluebird<any>
+  public sync: (options?: Sequelize.SyncOptions) => void
   public restAPI: Router
+  public samples: {[x: string]: any}
   private db: Sequelize.Sequelize
   private models: {[x: string]: Sequelize.Model<any, any>} = {}
   constructor (opt: SJOpts) {
     opt.dbOpts = Object.assign({}, opt.dbOpts)
     opt.dbOpts.logging = opt.dbOpts.logging || debug('sj:sequelize')
-    this.db = getDB(opt.dbUrl, opt.dbOpts)
+    this.db = store.getDB(opt.dbUrl, opt.dbOpts)
     this.define = (
       modelName: string,
       attributes: Sequelize.DefineAttributes,
@@ -31,7 +32,7 @@ export class SJ {
       }
     this.sync = (options) => {
       this.restAPI =  createAPIRoute(this.models)
-      return this.db.sync(options)
+      store.prepareDB(options, this.samples)
     }
   }
 }

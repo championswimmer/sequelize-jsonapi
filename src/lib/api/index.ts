@@ -9,7 +9,7 @@ import {Router} from 'express'
 function createResourceRoute(model: sequelize.Model<any, any>): Router {
   const api = Router()
   api.get('/', (req, res, next) => {
-    model.find().then(items => res.status(200).send(items))
+    model.findAll().then(items => res.status(200).send(items))
   })
   api.post('/', (req, res, next) => {
     model.create(req.body).then(result => res.status(201).send())
