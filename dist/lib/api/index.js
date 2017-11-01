@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
-const serializer_1 = require("../serializer");
+const sz = require("../serializer");
 const bodyParser = require("body-parser");
 /**
  * Create api route for one model
@@ -23,17 +23,19 @@ function createResourceRoute(modelName, model) {
                 }
             })
         }).then(items => res.status(200)
-            .send(serializer_1.serializers[modelName].serialize(items)));
+            .send(sz.serializers[modelName].serialize(items)));
     });
     api.post('/', (req, res, next) => {
-        model.create(serializer_1.deserializers[modelName].deserialize(req.body))
+        model.create(sz.deserializers[modelName].deserialize(req.body))
             .then(result => res.status(201).send());
     });
     api.patch('/:id', (req, res, next) => {
-        model.update(serializer_1.deserializers[modelName].deserialize(req.body), {
-            where: { id: req.params.id },
-            returning: true
-        }).then(item => res.status(201).send(item));
+        sz.deserializers[modelName].deserialize(req.body)
+            .then(data => {
+            model.update(data, {
+                where: { id: req.params.id },
+            }).then(item => res.status(202).send(sz.serializers[modelName].serialize(item.map(i => ({ id: i })))));
+        });
     });
     api.delete('/:id', (req, res, next) => {
         model.destroy({
@@ -49,7 +51,9 @@ function createResourceRoute(modelName, model) {
  */
 function createAPIRoute(models) {
     const api = express_1.Router();
-    api.use(bodyParser.json());
+    api.use(bodyParser.json({
+        type: 'application/vnd.api+json'
+    }));
     /**
      * Content negotiation
      */

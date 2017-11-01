@@ -15,7 +15,12 @@ const Article = server.define('articles', {
     title: lib_1.Types.STRING,
     body: lib_1.Types.TEXT
 });
+const Comment = server.define('comments', {
+    message: lib_1.Types.STRING
+});
 Article.belongsTo(User, { as: 'author' });
+Comment.belongsTo(User, { as: 'commenter' });
+Comment.belongsTo(Article);
 server.samples = {
     users: [
         { age: 12, name: 'Harry' },

@@ -8,7 +8,10 @@ exports.deserializers = deserializers;
 function createSerializer(model) {
     let options = {
         attributes: [],
-        keyForAttribute: 'camelCase'
+        keyForAttribute: 'camelCase',
+        dataLinks: {
+            self: (dataSet, item) => `/${item.type}/${item.id}`
+        }
     };
     for (let attr in model.attributes) {
         if (!model.attributes[attr].references) {

@@ -17,8 +17,8 @@ class SJ {
         };
         this.sync = (options) => {
             this.restAPI = index_1.createAPIRoute(this.models);
-            store_1.default.prepareDB(options, this.samples);
             index_2.createSerializers(this.db.models);
+            store_1.default.prepareDB(options, this.samples);
         };
     }
 }

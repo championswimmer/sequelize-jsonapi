@@ -33,8 +33,8 @@ export class SJ {
       }
     this.sync = (options) => {
       this.restAPI =  createAPIRoute(this.models)
-      store.prepareDB(options, this.samples)
       createSerializers(this.db.models)
+      store.prepareDB(options, this.samples)
     }
   }
 }

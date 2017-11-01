@@ -16,7 +16,12 @@ const Article = server.define('articles', {
   title: Types.STRING,
   body: Types.TEXT
 })
+const Comment = server.define('comments', {
+  message: Types.STRING
+})
 Article.belongsTo(User, {as: 'author'})
+Comment.belongsTo(User, {as: 'commenter'})
+Comment.belongsTo(Article)
 
 server.samples = {
   users: [

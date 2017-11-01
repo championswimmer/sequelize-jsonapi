@@ -2,6 +2,7 @@ import Sequelize = require('sequelize')
 import Bluebird = require('bluebird')
 import {isArray} from 'util'
 import debug from 'debug'
+import * as sz from '../serializer'
 
 let db: Sequelize.Sequelize
 const log = debug('sj:store')
