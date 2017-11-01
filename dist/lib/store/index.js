@@ -17,6 +17,19 @@ function getDB(dbUrl, dbOpts) {
     }
     return db;
 }
+function defineModel(modelName, attributes, options) {
+    /**
+     * Adding a 'types' parameter required for JSON:API
+     * Making it virtual since we do not need to store this in DB
+     * @type {{type: sequelize.DataTypeVirtual; set: (()); get: (() => string)}}
+     */
+    attributes['type'] = {
+        type: Sequelize.VIRTUAL,
+        set: () => { },
+        get: () => modelName
+    };
+    return db.define(modelName, attributes, options);
+}
 function prepareDB(options, samples) {
     if (!db)
         return;
@@ -32,5 +45,5 @@ function prepareDB(options, samples) {
         }
     });
 }
-exports.default = { getDB, prepareDB };
+exports.default = { getDB, prepareDB, defineModel };
 //# sourceMappingURL=index.js.map

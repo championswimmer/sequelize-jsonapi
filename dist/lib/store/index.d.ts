@@ -5,5 +5,6 @@ declare const _default: {
     prepareDB: (options?: Sequelize.SyncOptions, samples?: {
         [x: string]: any;
     }) => void;
+    defineModel: (modelName: string, attributes: Sequelize.DefineAttributes, options?: Sequelize.DefineOptions<any>) => Sequelize.Model<any, {}>;
 };
 export default _default;

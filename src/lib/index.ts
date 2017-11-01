@@ -4,6 +4,7 @@ import Sequelize = require('sequelize')
 import store from './store'
 import {createAPIRoute} from './api/index'
 import {Router} from 'express'
+import {createSerializers} from './serializer/index'
 
 export interface SJOpts {
   dbUrl: string,
@@ -27,12 +28,13 @@ export class SJ {
       modelName: string,
       attributes: Sequelize.DefineAttributes,
       options?: Sequelize.DefineOptions<any>) => {
-        this.models[modelName] = (this.db.define(modelName, attributes, options))
+        this.models[modelName] = (store.defineModel(modelName, attributes, options))
         return this.models[modelName]
       }
     this.sync = (options) => {
       this.restAPI =  createAPIRoute(this.models)
       store.prepareDB(options, this.samples)
+      createSerializers(this.db.models)
     }
   }
 }

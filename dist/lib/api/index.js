@@ -1,15 +1,28 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
+const serializer_1 = require("../serializer");
 /**
  * Create api route for one model
  * @param {sequelize.Model<any, any>} model
  * @returns {e.Router}
  */
-function createResourceRoute(model) {
+function createResourceRoute(modelName, model) {
     const api = express_1.Router();
     api.get('/', (req, res, next) => {
-        model.findAll().then(items => res.status(200).send(items));
+        model.findAll({
+            include: Object.keys(model.associations)
+                .map(rel => {
+                if (model.associations[rel].associationType = "BelongsTo") {
+                    return {
+                        model: model.sequelize.models[model.associations[rel].target.name],
+                        attributes: ['id'],
+                        as: rel
+                    };
+                }
+            })
+        }).then(items => res.status(200)
+            .send(serializer_1.serializers[modelName].serialize(items)));
     });
     api.post('/', (req, res, next) => {
         model.create(req.body).then(result => res.status(201).send());
@@ -35,7 +48,7 @@ function createResourceRoute(model) {
 function createAPIRoute(models) {
     const api = express_1.Router();
     for (let modelName in models) {
-        api.use(`/${modelName}`, createResourceRoute(models[modelName]));
+        api.use(`/${modelName}`, createResourceRoute(modelName, models[modelName]));
     }
     return api;
 }

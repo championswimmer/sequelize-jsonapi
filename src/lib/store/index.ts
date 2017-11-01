@@ -20,6 +20,22 @@ function getDB (dbUrl: string, dbOpts: Sequelize.Options) {
   return db
 }
 
+function defineModel (modelName: string,
+                      attributes: Sequelize.DefineAttributes,
+                      options?: Sequelize.DefineOptions<any>) {
+  /**
+   * Adding a 'types' parameter required for JSON:API
+   * Making it virtual since we do not need to store this in DB
+   * @type {{type: sequelize.DataTypeVirtual; set: (()); get: (() => string)}}
+   */
+  attributes['type'] = {
+    type: Sequelize.VIRTUAL,
+    set: () => {},
+    get: () => modelName
+  }
+  return db.define(modelName, attributes, options)
+}
+
 function prepareDB (options?: Sequelize.SyncOptions, samples?: {[x:string]:any}) {
   if (!db) return
   db.sync(options)
@@ -37,4 +53,4 @@ function prepareDB (options?: Sequelize.SyncOptions, samples?: {[x:string]:any})
 
 
 
-export default { getDB, prepareDB }
+export default { getDB, prepareDB, defineModel }

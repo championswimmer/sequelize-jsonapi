@@ -1,15 +1,30 @@
 import sequelize = require('sequelize')
 import {Router} from 'express'
+import {serializers} from '../serializer'
 
 /**
  * Create api route for one model
  * @param {sequelize.Model<any, any>} model
  * @returns {e.Router}
  */
-function createResourceRoute(model: sequelize.Model<any, any>): Router {
+function createResourceRoute(modelName: string, model: sequelize.Model<any, any> | any): Router {
   const api = Router()
   api.get('/', (req, res, next) => {
-    model.findAll().then(items => res.status(200).send(items))
+    model.findAll({
+      include:
+        Object.keys(model.associations)
+          .map(rel => {
+            if (model.associations[rel].associationType = "BelongsTo") {
+              return {
+                model: model.sequelize.models[model.associations[rel].target.name],
+                attributes: ['id'],
+                as: rel
+              }
+            }
+          })
+    }).then(items =>
+      res.status(200)
+        .send(serializers[modelName].serialize(items)))
   })
   api.post('/', (req, res, next) => {
     model.create(req.body).then(result => res.status(201).send())
@@ -36,7 +51,7 @@ function createResourceRoute(model: sequelize.Model<any, any>): Router {
 function createAPIRoute (models: {[x: string]: sequelize.Model<any, any>}): Router {
   const api = Router()
   for (let modelName in models) {
-    api.use(`/${modelName}`, createResourceRoute(models[modelName]))
+    api.use(`/${modelName}`, createResourceRoute(modelName, models[modelName]))
   }
   return api
 }
