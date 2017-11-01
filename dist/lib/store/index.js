@@ -2,6 +2,12 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const Sequelize = require("sequelize");
 let db;
+/**
+ * Create the database
+ * @param {string} dbUrl
+ * @param {sequelize.Options} dbOpts
+ * @returns {sequelize.Sequelize}
+ */
 function getDB(dbUrl, dbOpts) {
     // TODO: Throw error if dbURL is not correct format
     if (!db) {
