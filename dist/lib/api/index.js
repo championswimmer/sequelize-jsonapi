@@ -25,10 +25,11 @@ function createResourceRoute(modelName, model) {
             .send(serializer_1.serializers[modelName].serialize(items)));
     });
     api.post('/', (req, res, next) => {
-        model.create(req.body).then(result => res.status(201).send());
+        model.create(serializer_1.deserializers[modelName].deserialize(req.body))
+            .then(result => res.status(201).send());
     });
     api.patch('/:id', (req, res, next) => {
-        model.update(req.body, {
+        model.update(serializer_1.deserializers[modelName].deserialize(req.body), {
             where: { id: req.params.id },
             returning: true
         }).then(item => res.status(201).send(item));
@@ -36,7 +37,7 @@ function createResourceRoute(modelName, model) {
     api.delete('/:id', (req, res, next) => {
         model.destroy({
             where: { id: req.params.id },
-        }).then(result => res.status(202).send());
+        }).then(result => res.status(200).send());
     });
     return api;
 }

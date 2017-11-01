@@ -28,9 +28,16 @@ function createSerializer(model) {
     }
     return new jsonapi_serializer_1.Serializer(model.name, options);
 }
+function createDeserializer(model) {
+    let options = {
+        keyForAttribute: 'camelCase'
+    };
+    return new jsonapi_serializer_1.Deserializer(model.name, options);
+}
 function createSerializers(models) {
     for (let modelName in models) {
         serializers[modelName] = createSerializer(models[modelName]);
+        deserializers[modelName] = createDeserializer(models[modelName]);
     }
 }
 exports.createSerializers = createSerializers;

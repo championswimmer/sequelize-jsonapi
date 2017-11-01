@@ -1,6 +1,6 @@
 import sequelize = require('sequelize')
 import {Router} from 'express'
-import {serializers} from '../serializer'
+import {serializers, deserializers} from '../serializer'
 
 /**
  * Create api route for one model
@@ -27,10 +27,11 @@ function createResourceRoute(modelName: string, model: sequelize.Model<any, any>
         .send(serializers[modelName].serialize(items)))
   })
   api.post('/', (req, res, next) => {
-    model.create(req.body).then(result => res.status(201).send())
+    model.create(deserializers[modelName].deserialize(req.body))
+      .then(result => res.status(201).send())
   })
   api.patch('/:id', (req, res, next) => {
-    model.update(req.body, {
+    model.update(deserializers[modelName].deserialize(req.body), {
       where: {id: req.params.id},
       returning: true
     }).then(item => res.status(201).send(item))
@@ -38,7 +39,7 @@ function createResourceRoute(modelName: string, model: sequelize.Model<any, any>
   api.delete('/:id', (req, res, next) => {
     model.destroy({
       where: {id: req.params.id},
-    }).then(result => res.status(202).send())
+    }).then(result => res.status(200).send())
   })
   return api
 }

@@ -24,15 +24,22 @@ function createSerializer (model: any) {
       }
     }
   }
-
   return new Serializer(model.name, options)
 }
 
+function createDeserializer (model: any) {
+  let options = {
+    keyForAttribute: 'camelCase'
+  }
+  return new Deserializer(model.name, options)
+}
 function createSerializers (models: {[x:string]:sequelize.Model<any, any>}) {
   for (let modelName in models) {
     serializers[modelName] = createSerializer(models[modelName])
+    deserializers[modelName] = createDeserializer(models[modelName])
   }
 }
+
 
 export {
   createSerializers,
