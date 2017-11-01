@@ -1,6 +1,7 @@
 import sequelize = require('sequelize')
 import {Router} from 'express'
 import {serializers, deserializers} from '../serializer'
+import * as bodyParser from 'body-parser'
 
 /**
  * Create api route for one model
@@ -51,6 +52,21 @@ function createResourceRoute(modelName: string, model: sequelize.Model<any, any>
  */
 function createAPIRoute (models: {[x: string]: sequelize.Model<any, any>}): Router {
   const api = Router()
+  api.use(bodyParser.json())
+  /**
+   * Content negotiation
+   */
+  api.use((req, res, next) => {
+    if (req.header('Content-Type') !== 'application/vnd.api+json') {
+      return res.status(415).send({errors: [{
+        code: '415',
+        title: 'Unsupported Data Type'
+      }]})
+    }
+    res.setHeader('Content-Type', 'application/vnd.api+json')
+    next();
+  })
+
   for (let modelName in models) {
     api.use(`/${modelName}`, createResourceRoute(modelName, models[modelName]))
   }

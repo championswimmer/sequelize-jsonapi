@@ -2,6 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
 const serializer_1 = require("../serializer");
+const bodyParser = require("body-parser");
 /**
  * Create api route for one model
  * @param {sequelize.Model<any, any>} model
@@ -48,6 +49,20 @@ function createResourceRoute(modelName, model) {
  */
 function createAPIRoute(models) {
     const api = express_1.Router();
+    api.use(bodyParser.json());
+    /**
+     * Content negotiation
+     */
+    api.use((req, res, next) => {
+        if (req.header('Content-Type') !== 'application/vnd.api+json') {
+            return res.status(415).send({ errors: [{
+                        code: '415',
+                        title: 'Unsupported Data Type'
+                    }] });
+        }
+        res.setHeader('Content-Type', 'application/vnd.api+json');
+        next();
+    });
     for (let modelName in models) {
         api.use(`/${modelName}`, createResourceRoute(modelName, models[modelName]));
     }
