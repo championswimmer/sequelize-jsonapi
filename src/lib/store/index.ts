@@ -31,8 +31,8 @@ function defineModel (modelName: string,
    */
   attributes['type'] = {
     type: Sequelize.VIRTUAL,
-    set: () => {},
-    get: () => modelName
+    set: function (val) {this.setDataValue('type', val)},
+    get: function () { return modelName }
   }
   return db.define(modelName, attributes, options)
 }

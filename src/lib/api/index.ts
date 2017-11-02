@@ -10,19 +10,19 @@ import * as bodyParser from 'body-parser'
  */
 function createResourceRoute(modelName: string, model: sequelize.Model<any, any> | any): Router {
   const api = Router()
+  let include = Object.keys(model.associations).map(rel => {
+      if (true /*model.associations[rel].associationType === "BelongsTo"*/) {
+        return {
+          model: model.sequelize.models[model.associations[rel].target.name],
+          attributes: ['id', 'type'],
+          as: rel
+        }
+      }
+    })
+
   api.get('/', (req, res, next) => {
     model.findAll({
-      include:
-        Object.keys(model.associations)
-          .map(rel => {
-            if (model.associations[rel].associationType = "BelongsTo") {
-              return {
-                model: model.sequelize.models[model.associations[rel].target.name],
-                attributes: ['id'],
-                as: rel
-              }
-            }
-          })
+      include
     }).then(items =>
       res.status(200)
         .send(sz.serializers[modelName].serialize(items)))

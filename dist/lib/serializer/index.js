@@ -24,7 +24,22 @@ function createSerializer(model) {
                 ref: 'id',
                 included: false,
                 relationshipLinks: {
-                    self: (dataSet, item) => `/${item.type}/${item.id}`
+                    resource: (dataSet, item) => `/${item.type}/${item.id}`,
+                    related: (dataSet, item) => `/${dataSet.type}/${dataSet.id}/${relName}`,
+                    self: (dataSet, item) => `/${dataSet.type}/${dataSet.id}/relationships/${relName}`
+                }
+            };
+        }
+    }
+    for (let assoc in model.associations) {
+        if (model.associations[assoc].associationType === "HasMany") {
+            options.attributes.push(assoc);
+            options[assoc] = {
+                ref: 'id',
+                included: false,
+                relationshipLinks: {
+                    related: (dataSet, item) => `/${dataSet.type}/${dataSet.id}/${assoc}`,
+                    self: (dataSet, item) => `/${dataSet.type}/${dataSet.id}/relationships/${assoc}`
                 }
             };
         }

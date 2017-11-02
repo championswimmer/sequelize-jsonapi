@@ -22,6 +22,7 @@ const Comment = server.define('comments', {
 Article.belongsTo(User, {as: 'author'})
 Comment.belongsTo(User, {as: 'commenter'})
 Comment.belongsTo(Article)
+Article.hasMany(Comment)
 
 server.samples = {
   users: [
@@ -31,6 +32,9 @@ server.samples = {
   articles: [
     {title: 'Awesome Article', body: 'Some Stuff', authorId: 1},
     {title: 'Another Piece', body: 'With some shoddy journalism', authorId: 2}
+  ],
+  comments: [
+    {message: "Good article", articleId: 1, commenterId: 1}
   ]
 }
 
